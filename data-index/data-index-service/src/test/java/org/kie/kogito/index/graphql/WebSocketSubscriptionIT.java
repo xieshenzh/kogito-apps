@@ -39,7 +39,7 @@ import org.kie.kogito.index.TestUtils;
 import org.kie.kogito.index.event.KogitoJobCloudEvent;
 import org.kie.kogito.index.event.KogitoProcessCloudEvent;
 import org.kie.kogito.index.event.KogitoUserTaskCloudEvent;
-import org.kie.kogito.index.infinispan.protostream.ProtobufService;
+import org.kie.kogito.index.protobuf.ProtobufService;
 import org.kie.kogito.index.messaging.ReactiveMessagingEventConsumer;
 import org.kie.kogito.index.model.ProcessInstanceState;
 
@@ -78,7 +78,7 @@ public class WebSocketSubscriptionIT {
         String processId = "travels";
         String processInstanceId = UUID.randomUUID().toString();
 
-        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
 
         assertProcessInstanceSubscription(processId, processInstanceId, ProcessInstanceState.ACTIVE, "subscription { ProcessInstanceAdded { id, processId, state } }", "ProcessInstanceAdded");
         assertProcessInstanceSubscription(processId, processInstanceId, ProcessInstanceState.COMPLETED, "subscription { ProcessInstanceUpdated { id, processId, state } }", "ProcessInstanceUpdated");
@@ -90,7 +90,7 @@ public class WebSocketSubscriptionIT {
         String processId = "deals";
         String processInstanceId = UUID.randomUUID().toString();
 
-        protobufService.registerProtoBufferType(getDealsProtoBufferFile());
+        protobufService.registerProtoBufferType("", getDealsProtoBufferFile());
 
         assertUserTaskInstanceSubscription(taskId, processId, processInstanceId, "InProgress", "subscription { UserTaskInstanceAdded { id, processInstanceId, processId, state } }", "UserTaskInstanceAdded");
         assertUserTaskInstanceSubscription(taskId, processId, processInstanceId, "Completed", "subscription { UserTaskInstanceUpdated { id, processInstanceId, processId, state } }", "UserTaskInstanceUpdated");
@@ -111,7 +111,7 @@ public class WebSocketSubscriptionIT {
         String processId = "travels";
         String processInstanceId = UUID.randomUUID().toString();
 
-        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
 
         assertDomainSubscription(processId, processInstanceId, ProcessInstanceState.ACTIVE, "subscription { TravelsAdded { id, traveller { firstName }, metadata { processInstances { state } } } }", "TravelsAdded");
         assertDomainSubscription(processId, processInstanceId, ProcessInstanceState.COMPLETED, "subscription { TravelsUpdated { id, traveller { firstName }, metadata { processInstances { state } } } }", "TravelsUpdated");

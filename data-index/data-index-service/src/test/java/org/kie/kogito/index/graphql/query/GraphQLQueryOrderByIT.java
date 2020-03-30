@@ -37,7 +37,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.index.InfinispanServerTestResource;
 import org.kie.kogito.index.graphql.GraphQLSchemaManager;
-import org.kie.kogito.index.infinispan.protostream.ProtobufService;
+import org.kie.kogito.index.protobuf.ProtobufService;
 
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
@@ -78,7 +78,7 @@ public class GraphQLQueryOrderByIT {
 
     @Test
     public void testTravelsSort() throws Exception {
-        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
 
         testSortBy("Travels");
     }

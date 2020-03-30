@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.index.infinispan.protostream;
+package org.kie.kogito.index.protobuf;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,10 +73,9 @@ public class ProtobufMonitorService {
     ExecutorService executorService;
 
     public void onStart(@Observes StartupEvent ev) {
-        if (protoFiles.isPresent()) {
-            String folderPath = protoFiles.get();
+        protoFiles.ifPresent(folderPath -> {
             File protoFolder = new File(folderPath);
-            if (protoFolder.exists() == false) {
+            if (!protoFolder.exists()) {
                 throw new RuntimeException(format("Could not find proto files folder at: %s", folderPath));
             }
 
@@ -86,7 +85,7 @@ public class ProtobufMonitorService {
                 executorService = Executors.newSingleThreadExecutor();
                 executorService.submit(new FolderWatcher(registerProtoFile(), protoFolder.toPath()));
             }
-        }
+        });
     }
 
     private void registerFilesFromFolder(Path folderPath) {
@@ -102,7 +101,7 @@ public class ProtobufMonitorService {
             try {
                 LOGGER.info("Found proto file: {}", path);
                 String content = new String(Files.readAllBytes(path));
-                protobufService.registerProtoBufferType(content);
+                protobufService.registerProtoBufferType(path.getFileName().toString(), content);
             } catch (IOException ex) {
                 throw new RuntimeException(format("Could not read content from proto file folder"), ex);
             } catch (Exception e) {
@@ -133,7 +132,7 @@ public class ProtobufMonitorService {
         public void run() {
             try (WatchService ws = FileSystems.getDefault().newWatchService()) {
                 keys.put(folder.register(ws, ENTRY_MODIFY, ENTRY_CREATE), folder);
-                Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
+                Files.walkFileTree(folder, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                         keys.put(dir.register(ws, ENTRY_MODIFY, ENTRY_CREATE), dir);

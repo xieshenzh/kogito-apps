@@ -17,7 +17,6 @@
 package org.kie.kogito.index.messaging;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -36,12 +35,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.index.InfinispanServerTestResource;
 import org.kie.kogito.index.KafkaTestResource;
-import org.kie.kogito.index.infinispan.protostream.ProtobufService;
+import org.kie.kogito.index.protobuf.ProtobufService;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.isA;
 import static org.kie.kogito.index.TestUtils.getTravelsProtoBufferFile;
 import static org.kie.kogito.index.TestUtils.readFileContent;
@@ -80,7 +78,7 @@ public class ReactiveMessagingEventConsumerKafkaIT {
 
         String processInstanceId = "c2fa5c5e-3002-44c7-aef7-bce82297e3fe";
 
-        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
 
         given().contentType(ContentType.JSON).body("{ \"query\" : \"{Travels{ id } }\" }")
                 .when().post("/graphql")

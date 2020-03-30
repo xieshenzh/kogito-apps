@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.index.infinispan.protostream;
+package org.kie.kogito.index.protobuf;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -56,7 +56,7 @@ public class ProtobufMonitorServiceTest {
             doAnswer(args -> {
                 latch.countDown();
                 return null;
-            }).when(protobufService).registerProtoBufferType(any());
+            }).when(protobufService).registerProtoBufferType(any(), any());
 
             protobufMonitorService.monitor = true;
             protobufMonitorService.protoFiles = Optional.of(dir.toAbsolutePath().toString());
@@ -95,7 +95,7 @@ public class ProtobufMonitorServiceTest {
             doAnswer(args -> {
                 latch.countDown();
                 return null;
-            }).when(protobufService).registerProtoBufferType(any());
+            }).when(protobufService).registerProtoBufferType(any(), any());
 
             protobufMonitorService.monitor = true;
             protobufMonitorService.protoFiles = Optional.of(dir.toAbsolutePath().toString());

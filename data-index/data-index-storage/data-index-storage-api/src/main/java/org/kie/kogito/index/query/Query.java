@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates. 
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@ import java.util.List;
 
 public interface Query<T> {
 
-    Query limit(Integer limit);
+    Query<T> limit(Integer limit);
 
-    Query offset(Integer offset);
+    Query<T> offset(Integer offset);
 
-    Query filter(List<AttributeFilter> filters);
+    Query<T> filter(List<AttributeFilter> filters);
 
-    Query sort(List<AttributeSort> sortBy);
-    
+    Query<T> sort(List<AttributeSort> sortBy);
+
     List<T> execute();
-
 }

@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.index.infinispan.protostream;
+package org.kie.kogito.index.protobuf;
 
-public class ProtobufValidationException extends Exception {
-
-    public ProtobufValidationException() {
-    }
+public class ProtobufValidationException extends RuntimeException {
 
     public ProtobufValidationException(String message) {
         super(message);
