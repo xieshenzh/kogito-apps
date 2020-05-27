@@ -55,13 +55,13 @@ public class GraphQLScalarTypeProducer {
         return GraphQLScalarType.newScalar()
                 .name("DateTime")
                 .description("An ISO-8601 compliant DateTime Scalar")
-                .coercing(new Coercing<>() {
+                .coercing(new Coercing() {
                     @Override
                     public Object serialize(Object input) {
                         ZonedDateTime dateTime;
                         if (input instanceof ZonedDateTime) {
                             dateTime = (ZonedDateTime) input;
-                        } else if (input instanceof String || input instanceof Long) {
+                        } else if (input instanceof String) {
                             try {
                                 dateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(input.toString())), ZoneOffset.UTC);
                             } catch (NumberFormatException ex) {

@@ -615,7 +615,7 @@ public class IndexingServiceIT {
                 .when().post("/graphql")
                 .then().log().ifValidationFails().statusCode(200)
                 .body("data.Travels[0].id", is(processInstanceId))
-                .body("data.Travels[0].metadata.lastUpdate", is(formatZonedDateTime(startEvent.getTime().withZoneSameInstant(ZoneOffset.UTC))))
+                .body("data.Travels[0].metadata.lastUpdate", is(formatZonedDateTime(startEvent.getTime().withZoneSameInstant(ZoneOffset.UTC))))                
                 .body("data.Travels[0].metadata.processInstances.size()", is(1))
                 .body("data.Travels[0].metadata.processInstances[0].id", is(processInstanceId))
                 .body("data.Travels[0].metadata.processInstances[0].processId", is(processId))

@@ -17,6 +17,7 @@
 package org.kie.kogito.index.messaging;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -40,6 +41,7 @@ import org.kie.kogito.index.protobuf.ProtobufService;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.isA;
 import static org.kie.kogito.index.TestUtils.getTravelsProtoBufferFile;
 import static org.kie.kogito.index.TestUtils.readFileContent;

@@ -27,8 +27,8 @@
       <artifactId>quarkus-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-infinispan-client</artifactId>
+      <groupId>org.infinispan.protostream</groupId>
+      <artifactId>protostream</artifactId>
     </dependency>
 
     <!-- test -->

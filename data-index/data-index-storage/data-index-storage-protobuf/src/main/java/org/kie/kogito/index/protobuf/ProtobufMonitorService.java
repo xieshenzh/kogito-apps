@@ -73,9 +73,10 @@ public class ProtobufMonitorService {
     ExecutorService executorService;
 
     public void onStart(@Observes StartupEvent ev) {
-        protoFiles.ifPresent(folderPath -> {
+        if (protoFiles.isPresent()) {
+            String folderPath = protoFiles.get();
             File protoFolder = new File(folderPath);
-            if (!protoFolder.exists()) {
+            if (protoFolder.exists() == false) {
                 throw new RuntimeException(format("Could not find proto files folder at: %s", folderPath));
             }
 
@@ -85,7 +86,7 @@ public class ProtobufMonitorService {
                 executorService = Executors.newSingleThreadExecutor();
                 executorService.submit(new FolderWatcher(registerProtoFile(), protoFolder.toPath()));
             }
-        });
+        }
     }
 
     private void registerFilesFromFolder(Path folderPath) {
@@ -132,7 +133,7 @@ public class ProtobufMonitorService {
         public void run() {
             try (WatchService ws = FileSystems.getDefault().newWatchService()) {
                 keys.put(folder.register(ws, ENTRY_MODIFY, ENTRY_CREATE), folder);
-                Files.walkFileTree(folder, new SimpleFileVisitor<>() {
+                Files.walkFileTree(folder, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                         keys.put(dir.register(ws, ENTRY_MODIFY, ENTRY_CREATE), dir);

@@ -36,10 +36,10 @@ import org.slf4j.LoggerFactory;
 import static java.util.stream.Collectors.toList;
 import static org.kie.kogito.index.Constants.ID;
 import static org.kie.kogito.index.Constants.KOGITO_DOMAIN_ATTRIBUTE;
-import static org.kie.kogito.index.Constants.LAST_UPDATE;
 import static org.kie.kogito.index.Constants.PROCESS_ID;
 import static org.kie.kogito.index.Constants.PROCESS_INSTANCES_DOMAIN_ATTRIBUTE;
 import static org.kie.kogito.index.Constants.USER_TASK_INSTANCES_DOMAIN_ATTRIBUTE;
+import static org.kie.kogito.index.Constants.LAST_UPDATE;
 import static org.kie.kogito.index.json.JsonUtils.getObjectMapper;
 
 @ApplicationScoped
@@ -114,7 +114,7 @@ public class IndexingService {
 
         ArrayNode indexPIArray = (ArrayNode) kogitoEvent.get(PROCESS_INSTANCES_DOMAIN_ATTRIBUTE);
         if (indexPIArray != null) {
-
+            
             kogitoBuilder.set(PROCESS_INSTANCES_DOMAIN_ATTRIBUTE, copyToArray((ArrayNode) kogitoCache.get(PROCESS_INSTANCES_DOMAIN_ATTRIBUTE), indexPIArray));
             kogitoBuilder.set(USER_TASK_INSTANCES_DOMAIN_ATTRIBUTE, kogitoCache.get(USER_TASK_INSTANCES_DOMAIN_ATTRIBUTE));
         }

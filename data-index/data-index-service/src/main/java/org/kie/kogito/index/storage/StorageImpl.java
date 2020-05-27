@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.index.infinispan;
+package org.kie.kogito.index.storage;
 
-public class Constants {
+import javax.enterprise.util.AnnotationLiteral;
 
-    public static final String INFINISPAN_STORAGE = "infinispan";
+public class StorageImpl extends AnnotationLiteral<Storage> implements Storage {
+
+    private final String type;
+
+    StorageImpl(final String type) {
+        this.type = type;
+    }
+
+    @Override
+    public String value() {
+        return type;
+    }
 }

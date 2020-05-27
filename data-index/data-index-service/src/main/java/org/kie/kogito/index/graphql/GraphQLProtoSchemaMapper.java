@@ -33,7 +33,7 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.GraphQLType;
 import graphql.schema.GraphQLTypeReference;
 import org.kie.kogito.index.domain.DomainDescriptor;
-import org.kie.kogito.index.domain.DomainModelRegisteredEvent;
+import org.kie.kogito.index.event.DomainModelRegisteredEvent;
 import org.kie.kogito.index.graphql.query.GraphQLInputObjectTypeMapper;
 import org.kie.kogito.index.graphql.query.GraphQLOrderByTypeMapper;
 import org.kie.kogito.index.graphql.query.GraphQLQueryParserRegistry;

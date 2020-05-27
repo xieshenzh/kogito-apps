@@ -19,115 +19,53 @@ package org.kie.kogito.index.infinispan.protostream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
-import io.quarkus.runtime.StartupEvent;
-import org.infinispan.protostream.FileDescriptorSource;
-import org.infinispan.protostream.SerializationContext;
-import org.infinispan.protostream.config.Configuration;
-import org.infinispan.protostream.descriptors.Descriptor;
-import org.infinispan.protostream.descriptors.FieldDescriptor;
-import org.infinispan.protostream.descriptors.FileDescriptor;
-import org.infinispan.protostream.descriptors.Option;
-import org.infinispan.protostream.impl.SerializationContextImpl;
 import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
+import org.kie.kogito.index.event.SchemaRegisteredEvent;
 import org.kie.kogito.index.infinispan.cache.InfinispanCacheManager;
+import org.kie.kogito.index.schema.SchemaDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.lang.String.format;
 import static java.util.Collections.emptyList;
-import static org.kie.kogito.index.Constants.KOGITO_DOMAIN_ATTRIBUTE;
 
 @ApplicationScoped
 public class ProtoSchemaManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtobufService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoSchemaManager.class);
 
     @Inject
-    InfinispanCacheManager manager;
+    ProtoSchemaAcceptor schemaAcceptor;
 
     @Inject
-    FileDescriptorSource kogitoDescriptors;
+    @Any
+    InfinispanCacheManager cacheManager;
 
-    @Inject
-    Event<FileDescriptorRegisteredEvent> event;
+    public void onSchemaRegisteredEvent(@Observes SchemaRegisteredEvent event) {
+        if (schemaAcceptor.accept(event.getSchemaType())) {
+            SchemaDescriptor schemaDescriptor = event.getSchemaDescriptor();
+            cacheManager.getProtobufCache().put(schemaDescriptor.getName(), schemaDescriptor.getSchemaContent());
+            schemaDescriptor.getProcessDescriptor().ifPresent(processDescriptor -> {
+                Map<String, String> cache = cacheManager.getProtobufCache();
+                cacheManager.getProcessIdModelCache().put(processDescriptor.getProcessId(), processDescriptor.getProcessType());
 
-    void onStart(@Observes StartupEvent ev) {
-        kogitoDescriptors.getFileDescriptors().forEach((name, bytes) -> {
-            LOGGER.info("Registering Kogito ProtoBuffer file: {}", name);
-            manager.getProtobufCache().put(name, new String(bytes));
-        });
-    }
+                List<String> errors = checkSchemaErrors(cache);
 
-    public void registerProtoBufferType(String content) throws Exception {
-        LOGGER.debug("Registering new ProtoBuffer file with content: \n{}", content);
+                if (!errors.isEmpty()) {
+                    String message = "Proto Schema contain errors:\n" + String.join("\n", errors);
+                    throw new RuntimeException(message);
+                }
 
-        content = content.replaceAll("kogito.Date", "string");
-        SerializationContext ctx = new SerializationContextImpl(Configuration.builder().build());
-        try {
-            ctx.registerProtoFiles(kogitoDescriptors);
-            ctx.registerProtoFiles(FileDescriptorSource.fromString("", content));
-        } catch (Exception ex) {
-            LOGGER.warn("Error trying to parse proto buffer file: {}", ex.getMessage(), ex);
-            throw ex;
+                if (LOGGER.isDebugEnabled()) {
+                    logProtoCacheKeys();
+                }
+            });
         }
-
-        FileDescriptor desc = ctx.getFileDescriptors().get("");
-        Option processIdOption = desc.getOption("kogito_id");
-        if (processIdOption == null || processIdOption.getValue() == null) {
-            throw new ProtobufValidationException("Missing marker for process id in proto file, please add option kogito_id=\"processid\"");
-        }
-        String processId = (String) processIdOption.getValue();
-
-        Option model = desc.getOption("kogito_model");
-        if (model == null || model.getValue() == null) {
-            throw new ProtobufValidationException("Missing marker for main message type in proto file, please add option kogito_model=\"messagename\"");
-        }
-        String messageName = (String) model.getValue();
-        String fullTypeName = desc.getPackage() == null ? messageName : desc.getPackage() + "." + messageName;
-
-        Descriptor descriptor;
-        try {
-            descriptor = ctx.getMessageDescriptor(fullTypeName);
-        } catch (IllegalArgumentException ex) {
-            throw new ProtobufValidationException(format("Could not find message with name: %s in proto file, e, please review option kogito_model", fullTypeName));
-        }
-
-        validateDescriptorField(messageName, descriptor, KOGITO_DOMAIN_ATTRIBUTE);
-
-        Map<String, String> cache = manager.getProtobufCache();
-        cache.put(processId + ".proto", content);
-        manager.getProcessIdModelCache().put(processId, fullTypeName);
-        List<String> errors = checkSchemaErrors(cache);
-        if (errors.isEmpty()) {
-            event.fire(new FileDescriptorRegisteredEvent(desc));
-        } else {
-            String message = "Proto Schema contain errors:\n" + errors.stream().collect(Collectors.joining("\n"));
-            throw new ProtobufValidationException(message);
-        }
-
-        if (LOGGER.isDebugEnabled()) {
-            listProtoCacheKeys();
-        }
-    }
-
-    private void validateDescriptorField(String messageName, Descriptor descriptor, String processInstancesDomainAttribute) throws Exception {
-        FieldDescriptor processInstances = descriptor.findFieldByName(processInstancesDomainAttribute);
-        if (processInstances == null) {
-            throw new ProtobufValidationException(format("Could not find %s attribute in proto message: %s", processInstancesDomainAttribute, messageName));
-        }
-    }
-
-    private void listProtoCacheKeys() {
-        LOGGER.debug(">>>>>>list cache keys start");
-        manager.getProtobufCache().entrySet().forEach(e -> LOGGER.debug(e.toString()));
-        LOGGER.debug(">>>>>>list cache keys end");
     }
 
     private List<String> checkSchemaErrors(Map<String, String> metadataCache) {
@@ -145,5 +83,11 @@ public class ProtoSchemaManager {
         } else {
             return emptyList();
         }
+    }
+
+    private void logProtoCacheKeys() {
+        LOGGER.debug(">>>>>>list cache keys start");
+        cacheManager.getProtobufCache().entrySet().forEach(e -> LOGGER.debug(e.toString()));
+        LOGGER.debug(">>>>>>list cache keys end");
     }
 }

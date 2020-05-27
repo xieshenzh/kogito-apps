@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates. 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,7 @@ package org.kie.kogito.index.query;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.kie.kogito.index.query.FilterCondition.AND;
-import static org.kie.kogito.index.query.FilterCondition.BETWEEN;
-import static org.kie.kogito.index.query.FilterCondition.CONTAINS;
-import static org.kie.kogito.index.query.FilterCondition.CONTAINS_ALL;
-import static org.kie.kogito.index.query.FilterCondition.CONTAINS_ANY;
-import static org.kie.kogito.index.query.FilterCondition.EQUAL;
-import static org.kie.kogito.index.query.FilterCondition.GT;
-import static org.kie.kogito.index.query.FilterCondition.GTE;
-import static org.kie.kogito.index.query.FilterCondition.IN;
-import static org.kie.kogito.index.query.FilterCondition.IS_NULL;
-import static org.kie.kogito.index.query.FilterCondition.LIKE;
-import static org.kie.kogito.index.query.FilterCondition.LT;
-import static org.kie.kogito.index.query.FilterCondition.LTE;
-import static org.kie.kogito.index.query.FilterCondition.NOT_NULL;
-import static org.kie.kogito.index.query.FilterCondition.OR;
+import static org.kie.kogito.index.query.FilterCondition.*;
 
 public final class QueryFilterFactory {
 

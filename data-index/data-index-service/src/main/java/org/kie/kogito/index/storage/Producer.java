@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.index.protobuf;
-
-import java.io.IOException;
+package org.kie.kogito.index.storage;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 
-import org.infinispan.protostream.FileDescriptorSource;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.index.cache.CacheService;
 
 @ApplicationScoped
-public class FileDescriptorProducer {
+public class Producer {
 
-    static final String KOGITO_INDEX_PROTO = "kogito-index.proto";
-    static final String KOGITO_TYPES_PROTO = "kogito-types.proto";
+    @ConfigProperty(name = "storage.type")
+    String storageType;
+
+    @Inject
+    @Any
+    Instance<CacheService> cacheServices;
 
     @Produces
-    FileDescriptorSource kogitoTypesDescriptor() throws IOException {
-        FileDescriptorSource source = new FileDescriptorSource();
-        source.addProtoFile(KOGITO_INDEX_PROTO, Thread.currentThread().getContextClassLoader().getResourceAsStream("META-INF/kogito-index.proto"));
-        source.addProtoFile(KOGITO_TYPES_PROTO, Thread.currentThread().getContextClassLoader().getResourceAsStream("kogito-types.proto"));
-        return source;
+    public CacheService cacheService() {
+        return cacheServices.select(new StorageImpl(storageType)).get();
     }
 }

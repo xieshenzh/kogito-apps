@@ -36,18 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.index.TestUtils.getProcessInstance;
 import static org.kie.kogito.index.model.ProcessInstanceState.ACTIVE;
 import static org.kie.kogito.index.model.ProcessInstanceState.COMPLETED;
-import static org.kie.kogito.index.query.QueryFilterFactory.between;
-import static org.kie.kogito.index.query.QueryFilterFactory.contains;
-import static org.kie.kogito.index.query.QueryFilterFactory.containsAll;
-import static org.kie.kogito.index.query.QueryFilterFactory.containsAny;
-import static org.kie.kogito.index.query.QueryFilterFactory.equalTo;
-import static org.kie.kogito.index.query.QueryFilterFactory.greaterThan;
-import static org.kie.kogito.index.query.QueryFilterFactory.greaterThanEqual;
-import static org.kie.kogito.index.query.QueryFilterFactory.in;
-import static org.kie.kogito.index.query.QueryFilterFactory.isNull;
-import static org.kie.kogito.index.query.QueryFilterFactory.lessThan;
-import static org.kie.kogito.index.query.QueryFilterFactory.lessThanEqual;
-import static org.kie.kogito.index.query.QueryFilterFactory.notNull;
+import static org.kie.kogito.index.query.QueryFilterFactory.*;
 
 @QuarkusTest
 @QuarkusTestResource(InfinispanServerTestResource.class)

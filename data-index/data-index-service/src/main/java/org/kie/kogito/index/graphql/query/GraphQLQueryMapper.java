@@ -120,7 +120,7 @@ public class GraphQLQueryMapper implements Function<GraphQLInputObjectType, Grap
     }
 
     private Function<Object, Stream<AttributeFilter>> mapSubEntityArgument(String joining, GraphQLQueryParser parser) {
-        return argument -> parser.apply(argument).stream().map(f -> {
+        return argument -> parser.apply((Map<String, Object>) argument).stream().map(f -> {
             f.setAttribute(joining + "." + f.getAttribute());
             return f;
         });
