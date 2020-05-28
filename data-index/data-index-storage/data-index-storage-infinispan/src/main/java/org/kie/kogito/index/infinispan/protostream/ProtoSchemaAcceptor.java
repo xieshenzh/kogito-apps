@@ -29,7 +29,7 @@ public class ProtoSchemaAcceptor implements SchemaAcceptor {
 
     static final String PROTO_SCHEMA_TYPE = "proto";
 
-    @ConfigProperty(name = "storage.type")
+    @ConfigProperty(name = "kogito.data-index.storage.type")
     String storageType;
 
     @Override

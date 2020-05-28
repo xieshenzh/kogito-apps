@@ -28,7 +28,7 @@ import org.kie.kogito.index.cache.CacheService;
 @ApplicationScoped
 public class Producer {
 
-    @ConfigProperty(name = "storage.type")
+    @ConfigProperty(name = "kogito.data-index.storage.type")
     String storageType;
 
     @Inject
