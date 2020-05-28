@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.index.protobuf.domain;
+package org.kie.kogito.index.protobuf;
 
 import org.infinispan.protostream.descriptors.FileDescriptor;
 
-public class DomainModelDescriptorRegisteredEvent {
+public class FileDescriptorRegisteredEvent {
 
     private final FileDescriptor descriptor;
 
-    public DomainModelDescriptorRegisteredEvent(FileDescriptor descriptor) {
+    public FileDescriptorRegisteredEvent(FileDescriptor descriptor) {
         this.descriptor = descriptor;
     }
 
@@ -32,7 +32,7 @@ public class DomainModelDescriptorRegisteredEvent {
 
     @Override
     public String toString() {
-        return "DomainModelDescriptorRegisteredEvent{" +
+        return "FileDescriptorRegisteredEvent{" +
                 "descriptor=" + descriptor +
                 '}';
     }

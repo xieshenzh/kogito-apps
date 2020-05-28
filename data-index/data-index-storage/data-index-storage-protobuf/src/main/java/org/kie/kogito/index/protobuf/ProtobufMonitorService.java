@@ -102,7 +102,7 @@ public class ProtobufMonitorService {
             try {
                 LOGGER.info("Found proto file: {}", path);
                 String content = new String(Files.readAllBytes(path));
-                protobufService.registerProtoBufferType(path.getFileName().toString(), content);
+                protobufService.registerProtoBufferType(content);
             } catch (IOException ex) {
                 throw new RuntimeException(format("Could not read content from proto file folder"), ex);
             } catch (Exception e) {

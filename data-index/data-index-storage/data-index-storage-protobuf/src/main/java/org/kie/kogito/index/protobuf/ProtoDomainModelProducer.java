@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.index.protobuf.domain;
+package org.kie.kogito.index.protobuf;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class ProtoDomainModelProducer {
     @Inject
     Event<DomainModelRegisteredEvent> domainEvent;
 
-    public void onDomainModelDescriptorRegistered(@Observes DomainModelDescriptorRegisteredEvent event) {
+    public void onFileDescriptorRegistered(@Observes FileDescriptorRegisteredEvent event) {
         FileDescriptor descriptor = event.getDescriptor();
         String rootMessage = (String) descriptor.getOption("kogito_model").getValue();
         String processId = (String) descriptor.getOption("kogito_id").getValue();

@@ -16,7 +16,7 @@
 
 package org.kie.kogito.index.protobuf;
 
-public class ProtobufValidationException extends RuntimeException {
+public class ProtobufValidationException extends Exception {
 
     public ProtobufValidationException() {
     }

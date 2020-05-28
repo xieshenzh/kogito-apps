@@ -88,7 +88,7 @@ public class IndexingServiceIT {
     @Test
     public void testAddBrokenProtoFile() {
         try {
-            protobufService.registerProtoBufferType("", getBrokenProtoBufferFile());
+            protobufService.registerProtoBufferType(getBrokenProtoBufferFile());
             fail("Registering broken proto file should fail");
         } catch (Exception ex) {
             assertThat(ex.getMessage()).isEqualTo("Failed to resolve type of field \"travels.traveller\". Type not found : stringa");
@@ -98,7 +98,7 @@ public class IndexingServiceIT {
     @Test
     public void testAddProtoFileMissingModel() {
         try {
-            protobufService.registerProtoBufferType("", getProtoBufferFileWithoutModel());
+            protobufService.registerProtoBufferType(getProtoBufferFileWithoutModel());
             fail("Registering broken proto file should fail");
         } catch (Exception ex) {
             assertThat(ex.getMessage()).isEqualTo("Missing marker for main message type in proto file, please add option kogito_model=\"messagename\"");
@@ -108,7 +108,7 @@ public class IndexingServiceIT {
     @Test
     public void testAddProtoFileMissingId() {
         try {
-            protobufService.registerProtoBufferType("", getProtoBufferFileWithoutId());
+            protobufService.registerProtoBufferType(getProtoBufferFileWithoutId());
             fail("Registering broken proto file should fail");
         } catch (Exception ex) {
             assertThat(ex.getMessage()).isEqualTo("Missing marker for process id in proto file, please add option kogito_id=\"processid\"");
@@ -118,7 +118,7 @@ public class IndexingServiceIT {
     @Test
     public void testAddProtoFileMissingModelType() {
         try {
-            protobufService.registerProtoBufferType("", getProtoBufferFileWithoutModelType());
+            protobufService.registerProtoBufferType(getProtoBufferFileWithoutModelType());
             fail("Registering broken proto file should fail");
         } catch (Exception ex) {
             assertThat(ex.getMessage()).isEqualTo("Could not find message with name: traveller in proto file, e, please review option kogito_model");
@@ -127,7 +127,7 @@ public class IndexingServiceIT {
 
     @Test //Reproducer for KOGITO-172
     public void testAddProtoFileTwice() throws Exception {
-        protobufService.registerProtoBufferType("", getProtoBufferFileV1());
+        protobufService.registerProtoBufferType(getProtoBufferFileV1());
         given().contentType(ContentType.JSON).body("{ \"query\" : \"{Game{ player, id, name, metadata { processInstances { id } } } }\" }")
                 .when().post("/graphql")
                 .then().log().ifValidationFails().statusCode(200).body("data.Game", isA(Collection.class));
@@ -135,7 +135,7 @@ public class IndexingServiceIT {
                 .when().post("/graphql")
                 .then().log().ifValidationFails().statusCode(200).body("data.ProcessInstances", isA(Collection.class));
 
-        protobufService.registerProtoBufferType("", getProtoBufferFileV2());
+        protobufService.registerProtoBufferType(getProtoBufferFileV2());
         given().contentType(ContentType.JSON).body("{ \"query\" : \"{Game{ id, name, company, metadata { processInstances { id } } } }\" }")
                 .when().post("/graphql")
                 .then().log().ifValidationFails().statusCode(200).body("data.Game", isA(Collection.class));
@@ -169,7 +169,7 @@ public class IndexingServiceIT {
         String secondTaskId = UUID.randomUUID().toString();
         String state = "InProgress";
 
-        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
 
         given().contentType(ContentType.JSON).body("{ \"query\" : \"{Travels{ id } }\" }")
                 .when().post("/graphql")
@@ -407,7 +407,7 @@ public class IndexingServiceIT {
         String processId = "travels";
         String processInstanceId = UUID.randomUUID().toString();
 
-        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
 
         given().contentType(ContentType.JSON).body("{ \"query\" : \"{ Travels{ id } }\" }")
                 .when().post("/graphql")
@@ -476,7 +476,7 @@ public class IndexingServiceIT {
         String processId = "travels";
         String processInstanceId = UUID.randomUUID().toString();
 
-        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
 
         given().contentType(ContentType.JSON).body("{ \"query\" : \"{ Travels{ id } }\" }")
                 .when().post("/graphql")
@@ -545,7 +545,7 @@ public class IndexingServiceIT {
         String processId = "travels";
         String processInstanceId = UUID.randomUUID().toString();
 
-        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
 
         given().contentType(ContentType.JSON).body("{ \"query\" : \"{ Travels{ id } }\" }")
                 .when().post("/graphql")
@@ -595,7 +595,7 @@ public class IndexingServiceIT {
         String subProcessId = processId + "_sub";
         String subProcessInstanceId = UUID.randomUUID().toString();
 
-        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
 
         given().contentType(ContentType.JSON).body("{ \"query\" : \"{ Travels{ id } }\" }")
                 .when().post("/graphql")
@@ -685,7 +685,7 @@ public class IndexingServiceIT {
         String processId = "deals";
         String processInstanceId = UUID.randomUUID().toString();
 
-        protobufService.registerProtoBufferType("", getDealsProtoBufferFile());
+        protobufService.registerProtoBufferType(getDealsProtoBufferFile());
 
         given().contentType(ContentType.JSON).body("{ \"query\" : \"{ Deals{ id } }\" }")
                 .when().post("/graphql")

@@ -78,7 +78,7 @@ public class GraphQLQueryOrderByIT {
 
     @Test
     public void testTravelsSort() throws Exception {
-        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
 
         testSortBy("Travels");
     }

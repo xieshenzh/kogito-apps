@@ -56,7 +56,7 @@ public class ProtobufMonitorServiceTest {
             doAnswer(args -> {
                 latch.countDown();
                 return null;
-            }).when(protobufService).registerProtoBufferType(any(), any());
+            }).when(protobufService).registerProtoBufferType(any());
 
             protobufMonitorService.monitor = true;
             protobufMonitorService.protoFiles = Optional.of(dir.toAbsolutePath().toString());
@@ -95,7 +95,7 @@ public class ProtobufMonitorServiceTest {
             doAnswer(args -> {
                 latch.countDown();
                 return null;
-            }).when(protobufService).registerProtoBufferType(any(), any());
+            }).when(protobufService).registerProtoBufferType(any());
 
             protobufMonitorService.monitor = true;
             protobufMonitorService.protoFiles = Optional.of(dir.toAbsolutePath().toString());

@@ -80,7 +80,7 @@ public class ReactiveMessagingEventConsumerKafkaIT {
 
         String processInstanceId = "c2fa5c5e-3002-44c7-aef7-bce82297e3fe";
 
-        protobufService.registerProtoBufferType("", getTravelsProtoBufferFile());
+        protobufService.registerProtoBufferType(getTravelsProtoBufferFile());
 
         given().contentType(ContentType.JSON).body("{ \"query\" : \"{Travels{ id } }\" }")
                 .when().post("/graphql")
