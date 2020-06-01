@@ -29,19 +29,19 @@ class ProtoSchemaAcceptorTest {
     ProtoSchemaAcceptor protoSchemaAcceptor = new ProtoSchemaAcceptor();
 
     @Test
-    void testAccept_supportedStorageTypeAndSchemaType() {
+    void supportedStorageTypeAndSchemaType() {
         protoSchemaAcceptor.storageType = INFINISPAN_STORAGE;
         assertTrue(protoSchemaAcceptor.accept(new SchemaType(PROTO_SCHEMA_TYPE)));
     }
 
     @Test
-    void testAccept_unsupportedSchemaType() {
+    void unsupportedSchemaType() {
         protoSchemaAcceptor.storageType = INFINISPAN_STORAGE;
         assertFalse(protoSchemaAcceptor.accept(new SchemaType("test")));
     }
 
     @Test
-    void testAccept_unsupportedStorageType() {
+    void unsupportedStorageType() {
         protoSchemaAcceptor.storageType = "test";
         assertFalse(protoSchemaAcceptor.accept(new SchemaType(PROTO_SCHEMA_TYPE)));
     }

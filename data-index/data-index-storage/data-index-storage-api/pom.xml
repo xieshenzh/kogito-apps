@@ -22,8 +22,8 @@
       <artifactId>jackson-annotations</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-core</artifactId>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
     </dependency>
   </dependencies>
 </project>
