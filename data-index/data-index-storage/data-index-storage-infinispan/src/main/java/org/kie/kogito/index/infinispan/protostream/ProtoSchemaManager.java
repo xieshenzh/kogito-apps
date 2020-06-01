@@ -29,6 +29,7 @@ import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 import org.kie.kogito.index.event.SchemaRegisteredEvent;
 import org.kie.kogito.index.infinispan.cache.InfinispanCacheManager;
 import org.kie.kogito.index.schema.SchemaDescriptor;
+import org.kie.kogito.index.schema.SchemaRegistrationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +59,7 @@ public class ProtoSchemaManager {
 
                 if (!errors.isEmpty()) {
                     String message = "Proto Schema contain errors:\n" + String.join("\n", errors);
-                    throw new RuntimeException(message);
+                    throw new SchemaRegistrationException(message);
                 }
 
                 if (LOGGER.isDebugEnabled()) {

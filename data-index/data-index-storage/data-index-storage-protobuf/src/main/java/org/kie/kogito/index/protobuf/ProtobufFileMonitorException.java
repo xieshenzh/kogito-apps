@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.index.infinispan;
+package org.kie.kogito.index.protobuf;
 
-public class Constants {
+class ProtobufFileMonitorException extends RuntimeException {
 
-    private Constants() {
+    ProtobufFileMonitorException(String message) {
+        super(message);
     }
 
-    public static final String INFINISPAN_STORAGE = "infinispan";
+    ProtobufFileMonitorException(Throwable cause) {
+        super(cause);
+    }
+
+    ProtobufFileMonitorException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

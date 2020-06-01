@@ -45,9 +45,9 @@ public class ProtobufService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtobufService.class);
 
-    private static final SchemaType SCHEMA_TYPE = new SchemaType("proto");
+    static final SchemaType SCHEMA_TYPE = new SchemaType("proto");
 
-    private static final String DOMAIN_MODEL_PROTO_NAME = "domainModel";
+    static final String DOMAIN_MODEL_PROTO_NAME = "domainModel";
 
     @Inject
     FileDescriptorSource kogitoDescriptors;
@@ -65,7 +65,7 @@ public class ProtobufService {
         });
     }
 
-    public void registerProtoBufferType(String content) throws Exception {
+    public void registerProtoBufferType(String content) throws ProtobufValidationException {
         LOGGER.debug("Registering new ProtoBuffer file with content: \n{}", content);
 
         content = content.replaceAll("kogito.Date", "string");
@@ -75,7 +75,7 @@ public class ProtobufService {
             ctx.registerProtoFiles(FileDescriptorSource.fromString(DOMAIN_MODEL_PROTO_NAME, content));
         } catch (Exception ex) {
             LOGGER.warn("Error trying to parse proto buffer file: {}", ex.getMessage(), ex);
-            throw ex;
+            throw new ProtobufValidationException(ex.getMessage());
         }
 
         FileDescriptor desc = ctx.getFileDescriptors().get(DOMAIN_MODEL_PROTO_NAME);
@@ -103,13 +103,13 @@ public class ProtobufService {
 
         try {
             schemaEvent.fire(new SchemaRegisteredEvent(new SchemaDescriptor(processId + ".proto", content, new ProcessDescriptor(processId, fullTypeName)), SCHEMA_TYPE));
-            domainModelEvent.fire(new FileDescriptorRegisteredEvent(desc));
         } catch (RuntimeException ex) {
             throw new ProtobufValidationException(ex.getMessage());
         }
+        domainModelEvent.fire(new FileDescriptorRegisteredEvent(desc));
     }
 
-    private void validateDescriptorField(String messageName, Descriptor descriptor, String processInstancesDomainAttribute) throws Exception {
+    private void validateDescriptorField(String messageName, Descriptor descriptor, String processInstancesDomainAttribute) throws ProtobufValidationException {
         FieldDescriptor processInstances = descriptor.findFieldByName(processInstancesDomainAttribute);
         if (processInstances == null) {
             throw new ProtobufValidationException(format("Could not find %s attribute in proto message: %s", processInstancesDomainAttribute, messageName));

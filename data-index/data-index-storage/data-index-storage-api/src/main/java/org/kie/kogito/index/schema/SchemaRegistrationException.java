@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.index.infinispan;
+package org.kie.kogito.index.schema;
 
-public class Constants {
+public class SchemaRegistrationException extends RuntimeException {
 
-    private Constants() {
+    public SchemaRegistrationException(String message) {
+        super(message);
     }
-
-    public static final String INFINISPAN_STORAGE = "infinispan";
 }

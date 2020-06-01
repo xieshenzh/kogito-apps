@@ -16,6 +16,8 @@
 
 package org.kie.kogito.index.storage;
 
+import java.util.Objects;
+
 import javax.enterprise.util.AnnotationLiteral;
 
 public class StorageImpl extends AnnotationLiteral<Storage> implements Storage {
@@ -29,5 +31,25 @@ public class StorageImpl extends AnnotationLiteral<Storage> implements Storage {
     @Override
     public String value() {
         return type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        StorageImpl storage = (StorageImpl) o;
+        return Objects.equals(type, storage.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), type);
     }
 }
