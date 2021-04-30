@@ -22,7 +22,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.commons.configuration.XMLStringConfiguration;
 import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 import org.kie.kogito.index.DataIndexStorageService;
@@ -30,6 +29,7 @@ import org.kie.kogito.persistence.api.Storage;
 import org.kie.kogito.persistence.api.schema.SchemaDescriptor;
 import org.kie.kogito.persistence.api.schema.SchemaRegisteredEvent;
 import org.kie.kogito.persistence.api.schema.SchemaRegistrationException;
+import org.kie.kogito.persistence.infinispan.cache.CacheManagerDelegate;
 import org.kie.kogito.persistence.infinispan.cache.ProtobufCacheService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class ProtoSchemaManager {
     DataIndexStorageService cacheManager;
 
     @Inject
-    RemoteCacheManager manager;
+    CacheManagerDelegate manager;
 
     @Inject
     ProtobufCacheService protobufCacheService;

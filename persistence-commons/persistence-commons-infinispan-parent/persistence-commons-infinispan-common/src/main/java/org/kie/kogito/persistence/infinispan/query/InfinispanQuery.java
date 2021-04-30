@@ -18,12 +18,11 @@ package org.kie.kogito.persistence.infinispan.query;
 import java.util.List;
 import java.util.function.Function;
 
-import org.infinispan.client.hotrod.RemoteCache;
-import org.infinispan.client.hotrod.Search;
 import org.infinispan.query.dsl.QueryFactory;
 import org.kie.kogito.persistence.api.query.AttributeFilter;
 import org.kie.kogito.persistence.api.query.AttributeSort;
 import org.kie.kogito.persistence.api.query.Query;
+import org.kie.kogito.persistence.infinispan.cache.CacheDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +43,8 @@ public class InfinispanQuery<T> implements Query<T> {
     private List<AttributeSort> sortBy;
     private String rootType;
 
-    public InfinispanQuery(RemoteCache<?, T> delegate, String rootType) {
-        this(Search.getQueryFactory(delegate), rootType);
+    public InfinispanQuery(CacheDelegate<?, T> delegate, String rootType, QueryFactoryGenerator queryFactoryGenerator) {
+        this(queryFactoryGenerator.generateQueryFactory(delegate), rootType);
     }
 
     protected InfinispanQuery(QueryFactory qf, String rootType) {

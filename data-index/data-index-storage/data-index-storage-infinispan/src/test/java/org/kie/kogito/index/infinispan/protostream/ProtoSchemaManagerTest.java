@@ -16,8 +16,6 @@
 
 package org.kie.kogito.index.infinispan.protostream;
 
-import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.client.hotrod.RemoteCacheManagerAdmin;
 import org.infinispan.commons.configuration.BasicConfiguration;
 import org.infinispan.query.remote.client.ProtobufMetadataManagerConstants;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +30,8 @@ import org.kie.kogito.persistence.api.schema.SchemaDescriptor;
 import org.kie.kogito.persistence.api.schema.SchemaRegisteredEvent;
 import org.kie.kogito.persistence.api.schema.SchemaRegistrationException;
 import org.kie.kogito.persistence.api.schema.SchemaType;
+import org.kie.kogito.persistence.infinispan.cache.CacheManagerAdminDelegate;
+import org.kie.kogito.persistence.infinispan.cache.CacheManagerDelegate;
 import org.kie.kogito.persistence.infinispan.cache.ProtobufCacheService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -77,10 +77,10 @@ class ProtoSchemaManagerTest {
     TemplateInstance templateInstance;
 
     @Mock
-    RemoteCacheManager manager;
+    CacheManagerDelegate manager;
 
     @Mock
-    RemoteCacheManagerAdmin remoteCacheManagerAdmin;
+    CacheManagerAdminDelegate cacheManagerAdmin;
 
     @BeforeEach
     void prepare() {
@@ -91,7 +91,7 @@ class ProtoSchemaManagerTest {
                 (Answer<String>) inv -> inv.getArgument(0).toString() + "_domain");
         when(cacheTemplate.data(any(), any())).thenReturn(templateInstance);
         when(templateInstance.data(any(), any())).thenReturn(templateInstance);
-        when(manager.administration()).thenReturn(remoteCacheManagerAdmin);
+        when(manager.administration()).thenReturn(cacheManagerAdmin);
     }
 
     @Test
@@ -110,7 +110,7 @@ class ProtoSchemaManagerTest {
         verify(protoSchemaAcceptor).accept(eq(schemaType));
         verify(protobufCache).put(eq(name), eq(content));
         verify(processIdModelCache).put(eq(processId), eq(processType));
-        verify(remoteCacheManagerAdmin).getOrCreateCache(eq(processId + "_domain"), any(BasicConfiguration.class));
+        verify(cacheManagerAdmin).getOrCreateCache(eq(processId + "_domain"), any(BasicConfiguration.class));
         verify(cacheManager).getDomainModelCacheName(processId);
         verify(cacheTemplate).data("cache_name", processId + "_domain");
         verify(templateInstance).data("indexed", emptySet());

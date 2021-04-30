@@ -23,14 +23,11 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.infinispan.client.hotrod.DataFormat;
-import org.infinispan.client.hotrod.RemoteCache;
-import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.client.hotrod.RemoteCacheManagerAdmin;
-import org.infinispan.commons.dataconversion.MediaType;
 import org.kie.kogito.persistence.api.Storage;
 import org.kie.kogito.persistence.api.StorageService;
 import org.kie.kogito.persistence.api.factory.StorageQualifier;
+import org.kie.kogito.persistence.infinispan.listener.CachedListenerGenerator;
+import org.kie.kogito.persistence.infinispan.query.QueryFactoryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,20 +40,20 @@ public class InfinispanCacheManager implements StorageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(InfinispanCacheManager.class);
 
     @Inject
-    JsonDataFormatMarshaller marshaller;
-
-    DataFormat jsonDataFormat;
-
-    @Inject
     @ConfigProperty(name = "kogito.cache.domain.template")
     Optional<String> cacheTemplateName;
 
     @Inject
-    RemoteCacheManager manager;
+    CacheManagerDelegate manager;
+
+    @Inject
+    CachedListenerGenerator listenerFactory;
+
+    @Inject
+    QueryFactoryGenerator queryFactoryGenerator;
 
     @PostConstruct
     public void init() {
-        jsonDataFormat = DataFormat.builder().valueType(MediaType.APPLICATION_JSON).valueMarshaller(marshaller).build();
         manager.start();
     }
 
@@ -77,14 +74,14 @@ public class InfinispanCacheManager implements StorageService {
      * @param name the cache manager name
      * @see KogitoCacheDefaultConfiguration
      */
-    protected <K, V> RemoteCache<K, V> getOrCreateCache(final String name) {
+    protected <K, V> CacheDelegate<K, V> getOrCreateCache(final String name) {
         LOGGER.debug("Trying to get cache {} from the server", name);
-        RemoteCache<K, V> remoteCache = manager.getCache(name);
+        CacheDelegate<K, V> remoteCache = manager.getCache(name);
         return remoteCache == null ? createCache(name) : remoteCache;
     }
 
-    protected <K, V> RemoteCache<K, V> createCache(final String name) {
-        RemoteCacheManagerAdmin admin = manager.administration();
+    protected <K, V> CacheDelegate<K, V> createCache(final String name) {
+        CacheManagerAdminDelegate admin = manager.administration();
         if (cacheTemplateName.isPresent()) {
             LOGGER.debug("Creating cache {} based on template named {}", name, cacheTemplateName.get());
             return admin.createCache(name, cacheTemplateName.get());
@@ -96,16 +93,16 @@ public class InfinispanCacheManager implements StorageService {
 
     @Override
     public Storage<String, String> getCache(String name) {
-        return new StorageImpl<>(getOrCreateCache(name), String.class.getName());
+        return new StorageImpl<>(getOrCreateCache(name), String.class.getName(), listenerFactory, queryFactoryGenerator);
     }
 
     @Override
     public <T> Storage<String, T> getCache(String name, Class<T> type) {
-        return new StorageImpl<>(getOrCreateCache(name), type.getName());
+        return new StorageImpl<>(getOrCreateCache(name), type.getName(), listenerFactory, queryFactoryGenerator);
     }
 
     @Override
     public <T> Storage<String, T> getCache(String name, Class<T> type, String rootType) {
-        return new StorageImpl<>(getOrCreateCache(name).withDataFormat(jsonDataFormat), rootType);
+        return new StorageImpl<>(this.<String, T> getOrCreateCache(name).withJsonFormat(), rootType, listenerFactory, queryFactoryGenerator);
     }
 }

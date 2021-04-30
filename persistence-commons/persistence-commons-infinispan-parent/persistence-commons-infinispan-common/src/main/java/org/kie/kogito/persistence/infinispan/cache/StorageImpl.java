@@ -16,17 +16,14 @@
 
 package org.kie.kogito.persistence.infinispan.cache;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.infinispan.client.hotrod.RemoteCache;
 import org.kie.kogito.persistence.api.Storage;
 import org.kie.kogito.persistence.api.query.Query;
-import org.kie.kogito.persistence.infinispan.listener.CacheObjectCreatedListener;
-import org.kie.kogito.persistence.infinispan.listener.CacheObjectRemovedListener;
-import org.kie.kogito.persistence.infinispan.listener.CacheObjectUpdatedListener;
+import org.kie.kogito.persistence.infinispan.listener.CachedListenerGenerator;
 import org.kie.kogito.persistence.infinispan.query.InfinispanQuery;
+import org.kie.kogito.persistence.infinispan.query.QueryFactoryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,15 +31,19 @@ public class StorageImpl<K, V> implements Storage<K, V> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StorageImpl.class);
 
-    private RemoteCache<K, V> delegate;
+    private CacheDelegate<K, V> delegate;
     private String rootType;
+    private CachedListenerGenerator listenerFactory;
+    private QueryFactoryGenerator queryFactoryGenerator;
 
-    public StorageImpl(RemoteCache<K, V> delegate, String rootType) {
+    public StorageImpl(CacheDelegate<K, V> delegate, String rootType, CachedListenerGenerator listenerFactory, QueryFactoryGenerator queryFactoryGenerator) {
         this.delegate = delegate;
         this.rootType = rootType;
+        this.listenerFactory = listenerFactory;
+        this.queryFactoryGenerator = queryFactoryGenerator;
     }
 
-    public V get(Object key) {
+    public V get(K key) {
         return delegate.get(key);
     }
 
@@ -50,7 +51,7 @@ public class StorageImpl<K, V> implements Storage<K, V> {
         delegate.clear();
     }
 
-    public V remove(Object key) {
+    public V remove(K key) {
         return delegate.remove(key);
     }
 
@@ -61,7 +62,7 @@ public class StorageImpl<K, V> implements Storage<K, V> {
 
     @Override
     public Map<K, V> entries() {
-        return new HashMap<>(delegate);
+        return delegate.entries();
     }
 
     public V put(K key, V value) {
@@ -71,22 +72,22 @@ public class StorageImpl<K, V> implements Storage<K, V> {
     @Override
     public void addObjectCreatedListener(Consumer<V> consumer) {
         LOGGER.debug("Adding new object created listener into Cache: {}", delegate.getName());
-        delegate.addClientListener(new CacheObjectCreatedListener<>(delegate, consumer));
+        delegate.addClientListener(listenerFactory.generateCacheObjectCreatedListener(delegate, consumer));
     }
 
     @Override
     public void addObjectUpdatedListener(Consumer<V> consumer) {
         LOGGER.debug("Adding new object updated listener into Cache: {}", delegate.getName());
-        delegate.addClientListener(new CacheObjectUpdatedListener<>(delegate, consumer));
+        delegate.addClientListener(listenerFactory.generateCacheObjectUpdatedListener(delegate, consumer));
     }
 
     @Override
     public void addObjectRemovedListener(Consumer<K> consumer) {
         LOGGER.debug("Adding new object removed listener into Cache: {}", delegate.getName());
-        delegate.addClientListener(new CacheObjectRemovedListener<>(consumer));
+        delegate.addClientListener(listenerFactory.generateCacheObjectRemovedListener(delegate, consumer));
     }
 
-    public RemoteCache<K, V> getDelegate() {
+    public CacheDelegate<K, V> getDelegate() {
         return delegate;
     }
 
@@ -97,6 +98,6 @@ public class StorageImpl<K, V> implements Storage<K, V> {
 
     @Override
     public Query<V> query() {
-        return new InfinispanQuery<>(delegate, rootType);
+        return new InfinispanQuery<>(delegate, rootType, queryFactoryGenerator);
     }
 }

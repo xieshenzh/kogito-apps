@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 import org.infinispan.client.hotrod.RemoteCache;
 
-public abstract class AbstractCacheObjectListener<K, T> {
+public abstract class AbstractCacheObjectListener<K, T> implements CacheListener<K, T> {
 
     protected RemoteCache<K, T> cache;
     protected Consumer<T> consumer;

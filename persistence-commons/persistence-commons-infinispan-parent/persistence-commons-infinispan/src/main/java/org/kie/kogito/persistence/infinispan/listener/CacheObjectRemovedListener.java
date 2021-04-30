@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ClientListener
-public class CacheObjectRemovedListener<K> {
+public class CacheObjectRemovedListener<K, T> implements CacheListener<K, T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheObjectRemovedListener.class);
 
