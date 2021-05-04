@@ -2,50 +2,49 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
+        <artifactId>data-index-service</artifactId>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>jobs-service</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jobs-service-postgresql</artifactId>
-    <name>Kogito :: Jobs Service PostgreSQL</name>
-    <description>Jobs Service (Timers and Async Jobs) with PostgreSQL</description>
+    <artifactId>data-index-service-infinispan-inmemory</artifactId>
+    <name>Kogito :: Data Index Service with Infinispan :: In-memory</name>
 
     <dependencies>
         <dependency>
-            <groupId>io.zonky.test</groupId>
-            <artifactId>embedded-postgres</artifactId>
-            <version>1.2.6</version>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>data-index-service-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>data-index-storage-infinispan</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>persistence-commons-infinispan-inmemory</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.infinispan</groupId>
+            <artifactId>infinispan-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-container-image-jib</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>jobs-service-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-reactive-pg-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-postgresql</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-flyway</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>jobs-service-common</artifactId>
+            <artifactId>data-index-service-common</artifactId>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-test-utils</artifactId>
+            <artifactId>persistence-commons-infinispan</artifactId>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -54,13 +53,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -69,18 +63,23 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
+            <groupId>net.javacrumbs.json-unit</groupId>
+            <artifactId>json-unit-assertj</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-test-utils</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -90,7 +89,6 @@
             <plugin>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
-                <version>${version.io.quarkus}</version>
                 <configuration>
                     <skipOriginalJarRename>true</skipOriginalJarRename>
                 </configuration>
@@ -103,8 +101,9 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-               <executions>
+                <executions>
                     <execution>
                         <id>default</id>
                         <goals>
@@ -112,7 +111,7 @@
                         </goals>
                         <configuration>
                             <excludes combine.children="append"> <!-- Add the exclude to existing ones -->
-                                <exclude>**/Keycloak*IT.java</exclude> <!-- Separate execution for this one -->
+                                <exclude>**/*Keycloak*IT.java</exclude> <!-- Separate execution for this one -->
                             </excludes>
                         </configuration>
                     </execution>
@@ -123,18 +122,21 @@
                         </goals>
                         <configuration>
                             <includes>
-                                <include>**/KeycloakPostgreSql*IT.java</include>
+                                <include>**/KeycloakInmemory*IT.java</include>
                             </includes>
                             <systemPropertyVariables>
-                                <quarkus.test.profile>keycloak</quarkus.test.profile>
-                                <quarkus.http.auth.policy.role-policy1.roles-allowed>confidential
-                                </quarkus.http.auth.policy.role-policy1.roles-allowed>
-                                <quarkus.http.auth.permission.roles1.paths>/*
-                                </quarkus.http.auth.permission.roles1.paths>
-                                <quarkus.http.auth.permission.roles1.policy>role-policy1
-                                </quarkus.http.auth.permission.roles1.policy>
+                                <quarkus.test.profile>keycloak-test</quarkus.test.profile>
+                                <quarkus.http.auth.policy.role-policy1.roles-allowed>confidential</quarkus.http.auth.policy.role-policy1.roles-allowed>
+                                <quarkus.http.auth.permission.roles1.paths>/*</quarkus.http.auth.permission.roles1.paths>
+                                <quarkus.http.auth.permission.roles1.policy>role-policy1</quarkus.http.auth.permission.roles1.policy>
                             </systemPropertyVariables>
                         </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

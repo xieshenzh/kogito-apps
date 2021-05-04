@@ -16,8 +16,9 @@
   <modules>
     <module>persistence-commons-api</module>
     <module>persistence-commons-protobuf</module>
-    <module>persistence-commons-infinispan-parent</module>
+    <module>persistence-commons-infinispan</module>
     <module>persistence-commons-mongodb</module>
     <module>persistence-commons-redis</module>
+    <module>persistence-commons-infinispan-inmemory</module>
   </modules>
 </project>

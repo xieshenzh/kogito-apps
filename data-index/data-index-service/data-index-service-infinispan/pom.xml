@@ -19,10 +19,6 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>persistence-commons-infinispan</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
       <artifactId>data-index-storage-infinispan</artifactId>
     </dependency>
 
@@ -34,6 +30,12 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>data-index-service-common</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>persistence-commons-infinispan</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

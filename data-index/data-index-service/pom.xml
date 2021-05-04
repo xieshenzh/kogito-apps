@@ -15,6 +15,6 @@
     <module>data-index-service-common</module>
     <module>data-index-service-infinispan</module>
     <module>data-index-service-mongodb</module>
-    <module>data-index-service-inmemory-infinispan</module>
+    <module>data-index-service-infinispan-inmemory</module>
   </modules>
 </project>

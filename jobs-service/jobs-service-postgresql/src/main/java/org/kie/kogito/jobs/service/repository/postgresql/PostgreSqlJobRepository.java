@@ -62,15 +62,17 @@ public class PostgreSqlJobRepository extends BaseReactiveJobRepository implement
 
     private RecipientMarshaller recipientMarshaller;
 
+    private EmbeddedPostgresManager manager;
+
     PostgreSqlJobRepository() {
         super(null, null);
     }
 
     @Inject
-    public PostgreSqlJobRepository(Vertx vertx, JobStreams jobStreams, PgPool client,
+    public PostgreSqlJobRepository(Vertx vertx, JobStreams jobStreams, EmbeddedPostgresManager manager,
             TriggerMarshaller triggerMarshaller, RecipientMarshaller recipientMarshaller) {
         super(vertx, jobStreams);
-        this.client = client;
+        this.client = PgPool.pool("postgresql://postgres:postgres@localhost:" + manager.getPostgres().getPort() + "/postgres?search_path=public");
         this.triggerMarshaller = triggerMarshaller;
         this.recipientMarshaller = recipientMarshaller;
     }
